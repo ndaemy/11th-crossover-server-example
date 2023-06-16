@@ -1,15 +1,17 @@
 import { Module } from '@nestjs/common';
+import { JwtModule } from '@nestjs/jwt';
 
 import { UsersModule } from '@/api/users/users.module';
 
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
-import { JwtModule } from '@nestjs/jwt';
+import { jwtConstants } from './constants';
 
 @Module({
   imports: [
     JwtModule.register({
-      secret: 'TEMP VALUE. WILL BE CHANGED TO REAL ONE.',
+      global: true,
+      secret: jwtConstants.secret,
       signOptions: { expiresIn: '3d' },
     }),
     UsersModule,

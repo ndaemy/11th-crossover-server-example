@@ -9,10 +9,11 @@ export class PostsService {
   posts: Post[] = [];
   nanoid = customAlphabet('abcdefghijklmnopqrstuvwxyz1234567890', 6);
 
-  create(createPostDto: CreatePostDto) {
+  create(createPostDto: CreatePostDto, authorId: string) {
     const post = {
-      id: this.nanoid(),
       ...createPostDto,
+      id: this.nanoid(),
+      authorId,
     };
 
     this.posts.push(post);
