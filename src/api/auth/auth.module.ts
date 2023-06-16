@@ -4,9 +4,16 @@ import { UsersModule } from '@/api/users/users.module';
 
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
-  imports: [UsersModule],
+  imports: [
+    JwtModule.register({
+      secret: 'TEMP VALUE. WILL BE CHANGED TO REAL ONE.',
+      signOptions: { expiresIn: '3d' },
+    }),
+    UsersModule,
+  ],
   controllers: [AuthController],
   providers: [AuthService],
 })

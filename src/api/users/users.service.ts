@@ -29,6 +29,8 @@ export class UsersService {
     const user = createUserDto;
 
     this.users.push(user);
+
+    return user;
   }
 
   findOne(id: string) {
