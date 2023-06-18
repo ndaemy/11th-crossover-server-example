@@ -21,7 +21,7 @@ export class AuthService {
     let user;
 
     try {
-      user = this.usersService.findOne(loginDto.id);
+      user = await this.usersService.findOne(loginDto.id);
     } catch {
       throw new UnauthorizedException('존재하지 않는 사용자입니다.');
     }

@@ -1,32 +1,49 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { customAlphabet } from 'nanoid';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
+
+import { PrismaService } from '@/prisma/prisma.service';
 
 import { CreatePostDto } from './dto/create-post.dto';
-import { Post } from './entities/post.entity';
 
 @Injectable()
 export class PostsService {
-  posts: Post[] = [];
-  nanoid = customAlphabet('abcdefghijklmnopqrstuvwxyz1234567890', 6);
+  constructor(private readonly prismaService: PrismaService) {}
 
-  create(createPostDto: CreatePostDto, authorId: string) {
-    const post = {
-      ...createPostDto,
-      id: this.nanoid(),
-      authorId,
-    };
-
-    this.posts.push(post);
+  async create(createPostDto: CreatePostDto, authorId: string) {
+    let post;
+    try {
+      post = await this.prismaService.post.create({
+        data: {
+          ...createPostDto,
+          authorId,
+        },
+      });
+    } catch (e) {
+      console.error(e);
+      if (e.code === 'P2003') {
+        throw new UnauthorizedException(
+          '글을 쓰려는 유저가 존재하지 않습니다.',
+        );
+      }
+      throw e;
+    }
 
     return post;
   }
 
   findAll() {
-    return this.posts;
+    return this.prismaService.post.findMany();
   }
 
-  findOne(id: string) {
-    const post = this.posts.find(post => post.id === id);
+  async findOne(id: string) {
+    const post = await this.prismaService.post.findUnique({
+      where: {
+        id,
+      },
+    });
 
     if (!post) {
       throw new NotFoundException('해당 아이디를 가진 포스트가 없습니다.');
@@ -35,9 +52,15 @@ export class PostsService {
     return post;
   }
 
-  remove(id: string) {
-    this.findOne(id);
-
-    this.posts = this.posts.filter(post => post.id !== id);
+  async remove(id: string) {
+    try {
+      await this.prismaService.post.delete({
+        where: {
+          id,
+        },
+      });
+    } catch (e) {
+      console.error(e.code);
+    }
   }
 }
