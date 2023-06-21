@@ -1,5 +1,6 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import * as bcrypt from 'bcrypt';
 
 import { UsersService } from '@/api/users/users.service';
 
@@ -13,8 +14,22 @@ export class AuthService {
     private readonly usersService: UsersService,
   ) {}
 
-  register(registerDto: RegisterDto) {
-    return this.usersService.create(registerDto);
+  private hashPassword(password: string): Promise<string> {
+    return bcrypt.hash(password, 10);
+  }
+
+  private comparePassword(
+    password: string,
+    hashedPassword: string,
+  ): Promise<boolean> {
+    return bcrypt.compare(password, hashedPassword);
+  }
+
+  async register(registerDto: RegisterDto) {
+    return this.usersService.create({
+      ...registerDto,
+      password: await this.hashPassword(registerDto.password),
+    });
   }
 
   async login(loginDto: LoginDto) {
@@ -26,7 +41,7 @@ export class AuthService {
       throw new UnauthorizedException('존재하지 않는 사용자입니다.');
     }
 
-    if (user.password !== loginDto.password) {
+    if (!(await this.comparePassword(loginDto.password, user.password))) {
       throw new UnauthorizedException('비밀번호가 일치하지 않습니다.');
     }
 
