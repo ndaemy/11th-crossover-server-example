@@ -60,7 +60,9 @@ export class PostsService {
         },
       });
     } catch (e) {
-      console.error(e.code);
+      if (e.code === 'P2025') {
+        throw new NotFoundException(['해당 아이디를 가진 포스트가 없습니다.']);
+      }
     }
   }
 }
