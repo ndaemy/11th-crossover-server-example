@@ -22,7 +22,7 @@ export class AuthGuard implements CanActivate {
     const request = context.switchToHttp().getRequest();
     const token = this.extractTokenFromHeader(request);
     if (!token) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException(['로그인을 먼저 해주세요.']);
     }
     try {
       const payload = await this.jwtService.verifyAsync(token, {
@@ -30,7 +30,9 @@ export class AuthGuard implements CanActivate {
       });
       request['userId'] = payload.userId;
     } catch {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException([
+        '로그인이 만료되었습니다. 다시 로그인을 해주세요.',
+      ]);
     }
     return true;
   }
