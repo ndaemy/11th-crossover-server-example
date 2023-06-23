@@ -8,9 +8,9 @@ import {
 } from 'class-validator';
 
 export class RegisterDto {
-  @IsAlphanumeric()
-  @MinLength(5)
-  @MaxLength(10)
+  @IsAlphanumeric('en-US', { message: '아이디는 영문, 숫자만 가능합니다.' })
+  @MinLength(5, { message: '아이디는 5자 이상이어야 합니다.' })
+  @MaxLength(10, { message: '아이디는 10자 이하여야 합니다.' })
   id: string;
 
   @IsString()
@@ -22,6 +22,11 @@ export class RegisterDto {
   )
   password: string;
 
-  @IsEmail()
+  @IsEmail(
+    {},
+    {
+      message: '이메일 형식이 아닙니다.',
+    },
+  )
   email: string;
 }
