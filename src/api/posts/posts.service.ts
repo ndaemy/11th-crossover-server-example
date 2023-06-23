@@ -6,7 +6,7 @@ import {
 
 import { PrismaService } from '@/prisma/prisma.service';
 
-import { CreatePostDto } from './dto/create-post.dto';
+import { CreatePostDto } from './dto';
 
 @Injectable()
 export class PostsService {
@@ -35,8 +35,32 @@ export class PostsService {
     return post;
   }
 
-  findAll() {
-    return this.prismaService.post.findMany();
+  async findMany(
+    {
+      page,
+      size,
+    }: {
+      page: number;
+      size: number;
+    },
+    userId: string,
+  ) {
+    const posts = await this.prismaService.post.findMany({
+      skip: (page - 1) * size,
+      take: size,
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+
+    return posts.map(post => ({
+      id: post.id,
+      title: post.title,
+      content: post.content,
+      createdAt: post.createdAt,
+      updatedAt: post.updatedAt,
+      isMine: post.authorId === userId,
+    }));
   }
 
   async findOne(id: string) {

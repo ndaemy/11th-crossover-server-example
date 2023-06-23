@@ -7,12 +7,13 @@ import {
   Delete,
   UseGuards,
   Req,
+  Query,
 } from '@nestjs/common';
 
 import { AuthGuard } from '@/api/auth/auth.guard';
 
+import { CreatePostDto, GetPostQuery } from './dto';
 import { PostsService } from './posts.service';
-import { CreatePostDto } from './dto/create-post.dto';
 
 @Controller('posts')
 export class PostsController {
@@ -24,11 +25,20 @@ export class PostsController {
     return this.postsService.create(createPostDto, req.userId);
   }
 
+  @UseGuards(AuthGuard)
   @Get()
-  findAll() {
-    return this.postsService.findAll();
+  findMany(@Query() query: GetPostQuery, @Req() req) {
+    const { page = 1, size = 10 } = query;
+    return this.postsService.findMany(
+      {
+        page,
+        size,
+      },
+      req.userId,
+    );
   }
 
+  @UseGuards(AuthGuard)
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.postsService.findOne(id);
