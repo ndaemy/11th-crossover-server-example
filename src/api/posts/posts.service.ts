@@ -64,17 +64,17 @@ export class PostsService {
   }
 
   async findOne(id: string) {
-    const post = await this.prismaService.post.findUnique({
-      where: {
-        id,
-      },
-    });
-
-    if (!post) {
-      throw new NotFoundException(['해당 아이디를 가진 포스트가 없습니다.']);
+    try {
+      return await this.prismaService.post.findUniqueOrThrow({
+        where: {
+          id,
+        },
+      });
+    } catch (e) {
+      if (e.code === 'P2025') {
+        throw new NotFoundException(['해당 아이디를 가진 포스트가 없습니다.']);
+      }
     }
-
-    return post;
   }
 
   async remove(id: string) {
