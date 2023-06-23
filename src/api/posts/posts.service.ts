@@ -31,6 +31,7 @@ export class PostsService {
       throw e;
     }
 
+    delete post.authorId;
     return post;
   }
 
