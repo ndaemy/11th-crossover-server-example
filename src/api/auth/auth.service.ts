@@ -34,15 +34,16 @@ export class AuthService {
 
   async login(loginDto: LoginDto) {
     let user;
-
     try {
       user = await this.usersService.findOne(loginDto.id);
-    } catch {
-      throw new UnauthorizedException('존재하지 않는 사용자입니다.');
+    } catch (e) {
+      throw new UnauthorizedException([
+        '해당 아이디를 가진 유저가 존재하지 않습니다.',
+      ]);
     }
 
     if (!(await this.comparePassword(loginDto.password, user.password))) {
-      throw new UnauthorizedException('비밀번호가 일치하지 않습니다.');
+      throw new UnauthorizedException(['비밀번호가 일치하지 않습니다.']);
     }
 
     const payload = {

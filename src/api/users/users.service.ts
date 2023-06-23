@@ -45,19 +45,19 @@ export class UsersService {
     return user;
   }
 
-  findOne(id: string) {
-    const user = this.prismaService.user.findUnique({
-      where: {
-        id,
-      },
-    });
-
-    if (!user) {
-      throw new NotFoundException(
-        '해당 아이디를 가진 유저가 존재하지 않습니다.',
-      );
+  async findOne(id: string) {
+    try {
+      return await this.prismaService.user.findUniqueOrThrow({
+        where: {
+          id,
+        },
+      });
+    } catch (e) {
+      if (e.code === 'P2025') {
+        throw new NotFoundException([
+          '해당 아이디를 가진 유저가 존재하지 않습니다.',
+        ]);
+      }
     }
-
-    return user;
   }
 }
