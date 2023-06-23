@@ -14,7 +14,12 @@ export class RegisterDto {
   id: string;
 
   @IsString()
-  @Matches(/^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z\d]{5,10}$/)
+  @Matches(
+    /^(?=.*[A-Za-z])(?=.*\d)(?=.*[~!@#$%^&*_\-+=`|(){}\[\]:;"'<>,.?/])[A-Za-z\d~!@#$%^&*_\-+=`|(){}\[\]:;"'<>,.?/]{8,13}$/,
+    {
+      message: '비밀번호는 영문, 숫자, 특수문자를 포함한 8~13자리여야 합니다.',
+    },
+  )
   password: string;
 
   @IsEmail()
