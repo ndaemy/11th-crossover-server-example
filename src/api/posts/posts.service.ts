@@ -71,7 +71,7 @@ export class PostsService {
     });
 
     if (!post) {
-      throw new NotFoundException('해당 아이디를 가진 포스트가 없습니다.');
+      throw new NotFoundException(['해당 아이디를 가진 포스트가 없습니다.']);
     }
 
     return post;
