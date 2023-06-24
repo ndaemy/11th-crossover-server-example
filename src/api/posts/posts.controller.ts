@@ -40,8 +40,8 @@ export class PostsController {
 
   @UseGuards(AuthGuard)
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.postsService.findOne(id);
+  findOne(@Param('id') id: string, @Req() req) {
+    return this.postsService.findOne(id, req.userId);
   }
 
   @UseGuards(AuthGuard)

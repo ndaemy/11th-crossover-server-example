@@ -63,9 +63,10 @@ export class PostsService {
     }));
   }
 
-  async findOne(id: string) {
+  async findOne(id: string, userId: string) {
+    let post;
     try {
-      return await this.prismaService.post.findUniqueOrThrow({
+      post = await this.prismaService.post.findUniqueOrThrow({
         where: {
           id,
         },
@@ -75,6 +76,15 @@ export class PostsService {
         throw new NotFoundException(['해당 아이디를 가진 포스트가 없습니다.']);
       }
     }
+
+    return {
+      id: post.id,
+      title: post.title,
+      content: post.content,
+      createdAt: post.createdAt,
+      updatedAt: post.updatedAt,
+      isMine: post.authorId === userId,
+    };
   }
 
   async remove(id: string) {
