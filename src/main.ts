@@ -5,7 +5,7 @@ import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
-    cors: { origin: /localhost/ },
+    cors: { origin: [/localhost/, /vercel\.app/] },
   });
   app.setGlobalPrefix('/api');
   app.useGlobalPipes(
